@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.zhuoxin.gitdroid.R;
 import com.zhuoxin.gitdroid.guide.pager.Pager2;
@@ -30,6 +31,14 @@ public class GuideFragment extends Fragment implements ViewPager.OnPageChangeLis
     CircleIndicator indicator;
     @Bind(R.id.content)
     FrameLayout fraglayout;
+    //手机
+    @Bind(R.id.layoutPhone)  FrameLayout layoutphone;
+    //手机空白内容
+    @Bind(R.id.ivPhoneBlank)
+    ImageView ivPhoneBlank;
+    //手机实际内容
+    @Bind(R.id.ivPhone)
+    ImageView ivPhone;
     @BindColor(R.color.colorGreen) int colorGreen;   // ViewPager页面对应背景色
     @BindColor(R.color.colorRed) int colorRed;  // ViewPager页面对应背景色
     @BindColor(R.color.colorYellow) int colorYellow;    // ViewPager页面对应背景色
@@ -50,10 +59,46 @@ public class GuideFragment extends Fragment implements ViewPager.OnPageChangeLis
         //设置适配器
         adapter=new GuideAdapter(getContext());
         viewPager.setAdapter(adapter);
+        //添加监听
         viewPager.addOnPageChangeListener(this);
+        viewPager.addOnPageChangeListener(phoneViewhandler);
         //将viewpager设置给指示器
         indicator.setViewPager(viewPager);
     }
+
+    private  final ViewPager.OnPageChangeListener   phoneViewhandler  =new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            if(position==0){
+                //缩放动画
+                float scale=0.3f+positionOffset*0.7f;
+                layoutphone.setScaleX(scale);
+                layoutphone.setScaleY(scale);
+                //位移动画
+                float translate=(positionOffset-1)*200;
+                layoutphone.setTranslationX(translate);
+                //内容alpha动画
+                ivPhone.setAlpha(positionOffset);
+
+            }
+            //第二个页面到第三个页面时手机跟随viewpager做平移动画
+            if(position==1){
+                layoutphone.setTranslationX(-positionOffsetPixels);
+                return;
+            }
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
 
     //估值器
     private ArgbEvaluator evalutor = new ArgbEvaluator();
